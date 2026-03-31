@@ -300,26 +300,31 @@
                     <span class="hiragana">あ</span>
                     <span class="pronunciation">a（啊）</span>
                     <span class="hint">🎋像熊猫吃竹叶</span>
+                    <button class="sound-btn" onclick="event.stopPropagation(); speak('あ')">🔊 听</button>
                 </div>
                 <div class="vowel-card" onclick="selectCard(this, 'i')">
                     <span class="hiragana">い</span>
                     <span class="pronunciation">i（一）</span>
                     <span class="hint">🧍像人伸懒腰</span>
+                    <button class="sound-btn" onclick="event.stopPropagation(); speak('い')">🔊 听</button>
                 </div>
                 <div class="vowel-card" onclick="selectCard(this, 'u')">
                     <span class="hiragana">う</span>
                     <span class="pronunciation">u（乌）</span>
                     <span class="hint">🐟像张嘴的鱼</span>
+                    <button class="sound-btn" onclick="event.stopPropagation(); speak('う')">🔊 听</button>
                 </div>
                 <div class="vowel-card" onclick="selectCard(this, 'e')">
                     <span class="hiragana">え</span>
                     <span class="pronunciation">e（诶）</span>
                     <span class="hint">🏠像侧着的房子</span>
+                    <button class="sound-btn" onclick="event.stopPropagation(); speak('え')">🔊 听</button>
                 </div>
                 <div class="vowel-card" onclick="selectCard(this, 'o')">
                     <span class="hiragana">お</span>
                     <span class="pronunciation">o（哦）</span>
                     <span class="hint">🙏像跪着的人</span>
+                    <button class="sound-btn" onclick="event.stopPropagation(); speak('お')">🔊 听</button>
                 </div>
             </div>
 
@@ -382,15 +387,39 @@
         let selectedCard = null;
 
         // 发音函数
+        let voicesLoaded = false;
+        
+        function loadVoices() {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.getVoices();
+                window.speechSynthesis.onvoiceschanged = () => {
+                    voicesLoaded = true;
+                };
+            }
+        }
+        
         function speak(text) {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(text);
                 utterance.lang = 'ja-JP';
-                utterance.rate = 0.8;
+                utterance.rate = 0.7;
+                
+                // 尝试获取日语语音
+                const voices = window.speechSynthesis.getVoices();
+                const japaneseVoice = voices.find(v => v.lang.includes('ja'));
+                if (japaneseVoice) {
+                    utterance.voice = japaneseVoice;
+                }
+                
                 window.speechSynthesis.speak(utterance);
+            } else {
+                alert('抱歉，您的浏览器不支持语音功能');
             }
         }
+        
+        // 页面加载时预加载语音
+        loadVoices();
 
         // 选择卡片
         function selectCard(card, type) {
