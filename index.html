@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎌 日语五十音学习 - 少儿版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #ffd700;
+            font-size: 1.3em;
+            margin-bottom: 30px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            color: #667eea;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* 五元音卡片 */
+        .vowel-cards {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .vowel-card {
+            width: 120px;
+            height: 150px;
+            background: linear-gradient(145deg, #f0f0f0, #ffffff);
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .vowel-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+
+        .vowel-card.active {
+            border-color: #667eea;
+            background: linear-gradient(145deg, #e8eaff, #ffffff);
+        }
+
+        .vowel-card .hiragana {
+            font-size: 3.5em;
+            color: #333;
+        }
+
+        .vowel-card .pronunciation {
+            font-size: 1.2em;
+            color: #667eea;
+            margin-top: 5px;
+        }
+
+        .vowel-card .hint {
+            font-size: 0.9em;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        /* 发音按钮 */
+        .sound-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.2s;
+        }
+
+        .sound-btn:hover {
+            background: #ff5252;
+            transform: scale(1.05);
+        }
+
+        /* 测验区域 */
+        .quiz-section {
+            background: linear-gradient(145deg, #fff9e6, #ffffff);
+            border: 3px solid #ffd700;
+        }
+
+        .quiz-question {
+            font-size: 1.3em;
+            color: #333;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+        }
+
+        .quiz-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .quiz-option {
+            padding: 20px;
+            font-size: 2em;
+            background: white;
+            border: 3px solid #ddd;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .quiz-option:hover {
+            border-color: #667eea;
+            background: #f8f8ff;
+        }
+
+        .quiz-option.correct {
+            border-color: #4caf50;
+            background: #e8f5e9;
+            animation: pulse 0.5s;
+        }
+
+        .quiz-option.wrong {
+            border-color: #f44336;
+            background: #ffebee;
+            animation: shake 0.5s;
+        }
+
+        .quiz-option.disabled {
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* 进度条 */
+        .progress-container {
+            background: #e0e0e0;
+            border-radius: 10px;
+            height: 20px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* 得分显示 */
+        .score-display {
+            text-align: center;
+            font-size: 1.5em;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        /* 下一课按钮 */
+        .next-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            font-size: 1.3em;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+
+        .next-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .next-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* 反馈消息 */
+        .feedback {
+            text-align: center;
+            font-size: 1.2em;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .feedback.success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .feedback.fail {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .emoji-celebration {
+            font-size: 3em;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* 隐藏 */
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎌 日语五十音学习</h1>
+        <p class="subtitle">第一课：五元音 あいうえお</p>
+
+        <!-- 进度 -->
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar" style="width: 0%">0%</div>
+        </div>
+
+        <!-- 学习区域 -->
+        <div class="section" id="learnSection">
+            <div class="section-title">📚 学习五元音</div>
+            <p style="text-align:center; color:#666; margin-bottom:20px;">点击卡片查看发音和记忆技巧！</p>
+            
+            <div class="vowel-cards">
+                <div class="vowel-card" onclick="selectCard(this, 'a')">
+                    <span class="hiragana">あ</span>
+                    <span class="pronunciation">a（啊）</span>
+                    <span class="hint">🎋像熊猫吃竹叶</span>
+                </div>
+                <div class="vowel-card" onclick="selectCard(this, 'i')">
+                    <span class="hiragana">い</span>
+                    <span class="pronunciation">i（一）</span>
+                    <span class="hint">🧍像人伸懒腰</span>
+                </div>
+                <div class="vowel-card" onclick="selectCard(this, 'u')">
+                    <span class="hiragana">う</span>
+                    <span class="pronunciation">u（乌）</span>
+                    <span class="hint">🐟像张嘴的鱼</span>
+                </div>
+                <div class="vowel-card" onclick="selectCard(this, 'e')">
+                    <span class="hiragana">え</span>
+                    <span class="pronunciation">e（诶）</span>
+                    <span class="hint">🏠像侧着的房子</span>
+                </div>
+                <div class="vowel-card" onclick="selectCard(this, 'o')">
+                    <span class="hiragana">お</span>
+                    <span class="pronunciation">o（哦）</span>
+                    <span class="hint">🙏像跪着的人</span>
+                </div>
+            </div>
+
+            <button class="next-btn" id="startQuizBtn" onclick="startQuiz()" disabled>📝 开始测验</button>
+        </div>
+
+        <!-- 测验区域 -->
+        <div class="section quiz-section hidden" id="quizSection">
+            <div class="score-display">得分：<span id="score">0</span> / <span id="total">3</span></div>
+            <div class="section-title">📝 小测验</div>
+            
+            <div id="quizContainer">
+                <div class="quiz-question" id="quizQuestion"></div>
+                <div class="quiz-options" id="quizOptions"></div>
+            </div>
+
+            <div class="feedback" id="feedback"></div>
+            
+            <button class="next-btn" id="nextBtn" onclick="nextQuestion()" disabled>下一题 →</button>
+        </div>
+
+        <!-- 完成区域 -->
+        <div class="section hidden" id="completeSection">
+            <div style="text-align:center;">
+                <div class="emoji-celebration">🎉</div>
+                <h2 style="color:#667eea; font-size:2em; margin:20px 0;">太棒了！</h2>
+                <p style="font-size:1.3em; color:#333;">你完成了第一课！</p>
+                <p style="font-size:1.5em; color:#4caf50; margin:20px 0;">得分：<span id="finalScore">0</span> / 3</p>
+                <p style="color:#666; font-size:1.1em;" id="encouragement"></p>
+                <button class="next-btn" onclick="restart()">🔄 再学一遍</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 测验数据
+        const quizzes = [
+            {
+                question: "🎋 这个符号叫什么？",
+                options: ["あ", "い", "う", "え"],
+                correct: 0,
+                hint: "提示：像熊猫吃竹叶！"
+            },
+            {
+                question: "🐟 这个符号发什么音？",
+                options: ["あ", "い", "う", "え"],
+                correct: 2,
+                hint: "提示：张嘴的鱼！"
+            },
+            {
+                question: "🙏 按顺序背诵：あいうえお，打乱后是哪个顺序？",
+                options: ["いうあえお", "あえういお", "あいうえお", "うえあいう"],
+                correct: 2,
+                hint: "提示：按顺序就是 a-i-u-e-o！"
+            }
+        ];
+
+        let currentQuiz = 0;
+        let score = 0;
+        let selectedCard = null;
+
+        // 选择卡片
+        function selectCard(card, type) {
+            document.querySelectorAll('.vowel-card').forEach(c => c.classList.remove('active'));
+            card.classList.add('active');
+            selectedCard = type;
+            document.getElementById('startQuizBtn').disabled = false;
+        }
+
+        // 开始测验
+        function startQuiz() {
+            document.getElementById('learnSection').classList.add('hidden');
+            document.getElementById('quizSection').classList.remove('hidden');
+            currentQuiz = 0;
+            score = 0;
+            updateScore();
+            loadQuestion();
+        }
+
+        // 加载题目
+        function loadQuestion() {
+            const quiz = quizzes[currentQuiz];
+            document.getElementById('quizQuestion').innerHTML = quiz.question;
+            
+            const optionsContainer = document.getElementById('quizOptions');
+            optionsContainer.innerHTML = '';
+            
+            quiz.options.forEach((opt, index) => {
+                const btn = document.createElement('div');
+                btn.className = 'quiz-option';
+                btn.textContent = opt;
+                btn.onclick = () => selectAnswer(index);
+                optionsContainer.appendChild(btn);
+            });
+
+            document.getElementById('nextBtn').disabled = true;
+            document.getElementById('feedback').style.display = 'none';
+        }
+
+        // 选择答案
+        function selectAnswer(index) {
+            const quiz = quizzes[currentQuiz];
+            const options = document.querySelectorAll('.quiz-option');
+            
+            options.forEach(opt => opt.classList.add('disabled'));
+            
+            if (index === quiz.correct) {
+                options[index].classList.add('correct');
+                score++;
+                updateScore();
+                showFeedback(true, "✅ 真棒！回答正确！");
+            } else {
+                options[index].classList.add('wrong');
+                options[quiz.correct].classList.add('correct');
+                showFeedback(false, quiz.hint);
+            }
+
+            document.getElementById('nextBtn').disabled = false;
+            
+            // 更新进度
+            updateProgress();
+        }
+
+        // 显示反馈
+        function showFeedback(isCorrect, message) {
+            const feedback = document.getElementById('feedback');
+            feedback.textContent = message;
+            feedback.className = 'feedback ' + (isCorrect ? 'success' : 'fail');
+            feedback.style.display = 'block';
+        }
+
+        // 下一题
+        function nextQuestion() {
+            currentQuiz++;
+            if (currentQuiz >= quizzes.length) {
+                showComplete();
+            } else {
+                loadQuestion();
+            }
+        }
+
+        // 更新分数
+        function updateScore() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('total').textContent = quizzes.length;
+        }
+
+        // 更新进度条
+        function updateProgress() {
+            const progress = Math.round((currentQuiz / quizzes.length) * 100);
+            const bar = document.getElementById('progressBar');
+            bar.style.width = progress + '%';
+            bar.textContent = progress + '%';
+        }
+
+        // 显示完成
+        function showComplete() {
+            document.getElementById('quizSection').classList.add('hidden');
+            document.getElementById('completeSection').classList.remove('hidden');
+            document.getElementById('finalScore').textContent = score;
+            
+            const encouragements = [
+                "🌟 继续保持，你是最棒的！",
+                "🎊 太厉害了，下次一定能全对！",
+                "💯 太棒了！继续加油！"
+            ];
+            
+            let idx = 0;
+            if (score === 3) idx = 2;
+            else if (score === 2) idx = 1;
+            
+            document.getElementById('encouragement').textContent = encouragements[idx];
+            document.getElementById('progressBar').style.width = '100%';
+            document.getElementById('progressBar').textContent = '100%';
+        }
+
+        // 重新开始
+        function restart() {
+            document.getElementById('completeSection').classList.add('hidden');
+            document.getElementById('learnSection').classList.remove('hidden');
+            document.getElementById('progressBar').style.width = '0%';
+            document.getElementById('progressBar').textContent = '0%';
+            currentQuiz = 0;
+            score = 0;
+            updateScore();
+            document.querySelectorAll('.vowel-card').forEach(c => c.classList.remove('active'));
+            document.getElementById('startQuizBtn').disabled = true;
+        }
+    </script>
+</body>
+</html>
