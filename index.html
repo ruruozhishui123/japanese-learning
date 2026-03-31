@@ -381,12 +381,27 @@
         let score = 0;
         let selectedCard = null;
 
+        // 发音函数
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'ja-JP';
+                utterance.rate = 0.8;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
         // 选择卡片
         function selectCard(card, type) {
             document.querySelectorAll('.vowel-card').forEach(c => c.classList.remove('active'));
             card.classList.add('active');
             selectedCard = type;
             document.getElementById('startQuizBtn').disabled = false;
+            
+            // 发音
+            const sounds = { 'a': 'あ', 'i': 'い', 'u': 'う', 'e': 'え', 'o': 'お' };
+            speak(sounds[type]);
         }
 
         // 开始测验
