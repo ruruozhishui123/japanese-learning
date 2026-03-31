@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎌 日语五十音学习 - 第二课</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #ffd700;
+            font-size: 1.3em;
+            margin-bottom: 30px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            color: #667eea;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* 假名卡片 */
+        .vowel-cards {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .vowel-card {
+            width: 120px;
+            height: 170px;
+            background: linear-gradient(145deg, #f0f0f0, #ffffff);
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .vowel-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+
+        .vowel-card.active {
+            border-color: #667eea;
+            background: linear-gradient(145deg, #e8eaff, #ffffff);
+        }
+
+        .vowel-card .hiragana {
+            font-size: 3.5em;
+            color: #333;
+        }
+
+        .vowel-card .romaji {
+            font-size: 1.2em;
+            color: #667eea;
+            margin-top: 5px;
+        }
+
+        .vowel-card .pronunciation {
+            font-size: 1em;
+            color: #666;
+            margin-top: 3px;
+        }
+
+        .vowel-card .hint {
+            font-size: 0.85em;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        .sound-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 8px;
+        }
+
+        .sound-btn:hover {
+            background: #ff5252;
+            transform: scale(1.05);
+        }
+
+        /* 测验区域 */
+        .quiz-section {
+            background: linear-gradient(145deg, #fff9e6, #ffffff);
+            border: 3px solid #ffd700;
+        }
+
+        .quiz-question {
+            font-size: 1.3em;
+            color: #333;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+        }
+
+        .quiz-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .quiz-option {
+            padding: 20px;
+            font-size: 2em;
+            background: white;
+            border: 3px solid #ddd;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .quiz-option:hover {
+            border-color: #667eea;
+            background: #f8f8ff;
+        }
+
+        .quiz-option.correct {
+            border-color: #4caf50;
+            background: #e8f5e9;
+            animation: pulse 0.5s;
+        }
+
+        .quiz-option.wrong {
+            border-color: #f44336;
+            background: #ffebee;
+            animation: shake 0.5s;
+        }
+
+        .quiz-option.disabled {
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* 进度条 */
+        .progress-container {
+            background: #e0e0e0;
+            border-radius: 10px;
+            height: 20px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .score-display {
+            text-align: center;
+            font-size: 1.5em;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .next-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            font-size: 1.3em;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+        }
+
+        .next-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .next-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .feedback {
+            text-align: center;
+            font-size: 1.2em;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .feedback.success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .feedback.fail {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .emoji-celebration {
+            font-size: 3em;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* 单词练习 */
+        .word-section {
+            background: linear-gradient(145deg, #e8f5e9, #ffffff);
+            border: 3px solid #4caf50;
+        }
+
+        .word-cards {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .word-card {
+            width: 140px;
+            padding: 15px;
+            background: white;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .word-card .word {
+            font-size: 2em;
+            color: #333;
+        }
+
+        .word-card .meaning {
+            font-size: 1em;
+            color: #4caf50;
+            margin-top: 5px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .nav-btn {
+            flex: 1;
+            padding: 12px;
+            font-size: 1em;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-btn.prev {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .nav-btn.next {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎌 日语五十音学习</h1>
+        <p class="subtitle">第二课：か行（ka ki ku ke ko）</p>
+
+        <!-- 进度 -->
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar" style="width: 0%">0%</div>
+        </div>
+
+        <!-- 学习区域 -->
+        <div class="section" id="learnSection">
+            <div class="section-title">📚 学习か行</div>
+            <p style="text-align:center; color:#666; margin-bottom:20px;">点击卡片听发音，再点击🔊按钮！</p>
+            
+            <div class="vowel-cards">
+                <div class="vowel-card" onclick="selectCard(this, 'ka')">
+                    <span class="hiragana">か</span>
+                    <span class="romaji">ka</span>
+                    <span class="pronunciation">咖（咖啡的咖）</span>
+                    <span class="hint">🦞龙虾的大钳子</span>
+                    <button class="sound-btn" onclick="event.stopPropagation(); speak('か')">🔊 听</button>
+                </div>
+                <div class="vowel-card" onclick="selectCard(this, 'ki')">
+                    <span class="hiragana">き</span>
+                    <span class="romaji">ki</span>
+                    <span class="pronunciation">key（钥匙的音）</span>
+                    <span class="hint">🔑一把钥匙</span>
+                    <button class="sound-btn" onclick="event.stopPropagation(); speak('き')">🔊 听</button>
+                </div>
+                <div class="vowel-card" onclick="selectCard(this, 'ku')">
+                    <span class="hiragana">く</span>
+                    <span class="romaji">ku</span>
+                    <span class="pronunciation">酷（酷酷的酷）</span>
+                    <span class="hint">🦶嘴巴+苦瓜</span>
+                    <button class="sound-btn" onclick="event.stopPropagation(); speak('く')">🔊 听</button>
+                </div>
+                <div class="vowel-card" onclick="selectCard(this, 'ke')">
+                    <span class="hiragana">け</span>
+                    <span class="romaji">ke</span>
+                    <span class="pronunciation">开（开门的开）</span>
+                    <span class="hint">🚪门+毛线衣</span>
+                    <button class="sound-btn" onclick="event.stopPropagation(); speak('け')">🔊 听</button>
+                </div>
+                <div class="vowel-card" onclick="selectCard(this, 'ko')">
+                    <span class="hiragana">こ</span>
+                    <span class="romaji">ko</span>
+                    <span class="pronunciation">口（开口的扣）</span>
+                    <span class="hint">👄两只小眼睛</span>
+                    <button class="sound-btn" onclick="event.stopPropagation(); speak('こ')">🔊 听</button>
+                </div>
+            </div>
+
+            <button class="next-btn" id="startQuizBtn" onclick="startQuiz()" disabled>📝 开始测验</button>
+        </div>
+
+        <!-- 单词练习 -->
+        <div class="section word-section hidden" id="wordSection">
+            <div class="section-title">📖 简单单词</div>
+            <p style="text-align:center; color:#666; margin-bottom:20px;">学完假名，来认几个单词吧！</p>
+            
+            <div class="word-cards">
+                <div class="word-card">
+                    <div class="word">かわ</div>
+                    <div class="meaning">河、河流 🌊</div>
+                    <button class="sound-btn" onclick="speak('かわ')">🔊</button>
+                </div>
+                <div class="word-card">
+                    <div class="word">キー</div>
+                    <div class="meaning">钥匙 Key 🔑</div>
+                    <button class="sound-btn" onclick="speak('キー')">🔊</button>
+                </div>
+                <div class="word-card">
+                    <div class="word">ここ</div>
+                    <div class="meaning">这里 🏠</div>
+                    <button class="sound-btn" onclick="speak('ここ')">🔊</button>
+                </div>
+            </div>
+
+            <button class="next-btn" id="wordQuizBtn" onclick="startWordQuiz()">📝 单词测验</button>
+        </div>
+
+        <!-- 测验区域 -->
+        <div class="section quiz-section hidden" id="quizSection">
+            <div class="score-display">得分：<span id="score">0</span> / <span id="total">3</span></div>
+            <div class="section-title">📝 小测验</div>
+            
+            <div id="quizContainer">
+                <div class="quiz-question" id="quizQuestion"></div>
+                <div class="quiz-options" id="quizOptions"></div>
+            </div>
+
+            <div class="feedback" id="feedback"></div>
+            
+            <button class="next-btn" id="nextBtn" onclick="nextQuestion()" disabled>下一题 →</button>
+        </div>
+
+        <!-- 完成区域 -->
+        <div class="section hidden" id="completeSection">
+            <div style="text-align:center;">
+                <div class="emoji-celebration">🎉</div>
+                <h2 style="color:#667eea; font-size:2em; margin:20px 0;">太棒了！</h2>
+                <p style="font-size:1.3em; color:#333;">你完成了第二课！</p>
+                <p style="font-size:1.5em; color:#4caf50; margin:20px 0;">得分：<span id="finalScore">0</span> / 3</p>
+                <p style="color:#666; font-size:1.1em;" id="encouragement"></p>
+                
+                <div class="nav-buttons">
+                    <button class="nav-btn prev" onclick="goToLesson1()">📚 第一课</button>
+                    <button class="nav-btn next" onclick="goToLesson3()">📚 第三课</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 测验数据 - 假名测验
+        const quizzes = [
+            {
+                question: "🔑 这个符号叫什么？（提示：钥匙）",
+                options: ["あ", "き", "く", "け"],
+                correct: 1,
+                hint: "🔑钥匙=key=き"
+            },
+            {
+                question: "👄 这个符号发什么音？（提示：两只眼睛）",
+                options: ["か", "き", "く", "こ"],
+                correct: 3,
+                hint: "👄两只眼睛=こ"
+            },
+            {
+                question: "🦞 「龙虾的大钳子」是哪个假名？",
+                options: ["あ", "か", "さ", "た"],
+                correct: 1,
+                hint: "🦞龙虾=か"
+            }
+        ];
+
+        // 单词测验
+        const wordQuizzes = [
+            {
+                question: "🌊 「かわ」是什么意思？",
+                options: ["山", "河/河流", "海", "树"],
+                correct: 1,
+                hint: "かわ=河"
+            },
+            {
+                question: "🔑 「キー」是什么意思？",
+                options: ["门", "钥匙", "窗户", "桌子"],
+                correct: 1,
+                hint: "キー=钥匙(英语借词)"
+            },
+            {
+                question: "🏠 「ここ」是什么意思？",
+                options: ["那里", "这里", "哪里", "远处"],
+                correct: 1,
+                hint: "ここ=这里"
+            }
+        ];
+
+        let currentQuiz = 0;
+        let score = 0;
+        let quizType = 'kana'; // 'kana' or 'word'
+        let selectedCard = null;
+
+        // 发音函数
+        let voicesLoaded = false;
+        
+        function loadVoices() {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.getVoices();
+                window.speechSynthesis.onvoiceschanged = () => {
+                    voicesLoaded = true;
+                };
+            }
+        }
+        
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'ja-JP';
+                utterance.rate = 0.7;
+                
+                const voices = window.speechSynthesis.getVoices();
+                const japaneseVoice = voices.find(v => v.lang.includes('ja'));
+                if (japaneseVoice) {
+                    utterance.voice = japaneseVoice;
+                }
+                
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+        
+        loadVoices();
+
+        // 选择卡片
+        function selectCard(card, type) {
+            document.querySelectorAll('.vowel-card').forEach(c => c.classList.remove('active'));
+            card.classList.add('active');
+            selectedCard = type;
+            document.getElementById('startQuizBtn').disabled = false;
+        }
+
+        // 开始测验
+        function startQuiz() {
+            quizType = 'kana';
+            currentQuiz = 0;
+            score = 0;
+            document.getElementById('learnSection').classList.add('hidden');
+            document.getElementById('wordSection').classList.remove('hidden');
+            updateScore();
+        }
+
+        // 开始单词测验
+        function startWordQuiz() {
+            quizType = 'word';
+            currentQuiz = 0;
+            score = 0;
+            document.getElementById('wordSection').classList.add('hidden');
+            document.getElementById('quizSection').classList.remove('hidden');
+            updateScore();
+            loadQuestion();
+        }
+
+        // 加载题目
+        function loadQuestion() {
+            const quizList = quizType === 'kana' ? quizzes : wordQuizzes;
+            const quiz = quizList[currentQuiz];
+            document.getElementById('quizQuestion').innerHTML = quiz.question;
+            
+            const optionsContainer = document.getElementById('quizOptions');
+            optionsContainer.innerHTML = '';
+            
+            quiz.options.forEach((opt, index) => {
+                const btn = document.createElement('div');
+                btn.className = 'quiz-option';
+                btn.textContent = opt;
+                btn.onclick = () => selectAnswer(index);
+                optionsContainer.appendChild(btn);
+            });
+
+            document.getElementById('nextBtn').disabled = true;
+            document.getElementById('feedback').style.display = 'none';
+        }
+
+        // 选择答案
+        function selectAnswer(index) {
+            const quizList = quizType === 'kana' ? quizzes : wordQuizzes;
+            const quiz = quizList[currentQuiz];
+            const options = document.querySelectorAll('.quiz-option');
+            
+            options.forEach(opt => opt.classList.add('disabled'));
+            
+            if (index === quiz.correct) {
+                options[index].classList.add('correct');
+                score++;
+                updateScore();
+                showFeedback(true, "✅ 真棒！回答正确！");
+            } else {
+                options[index].classList.add('wrong');
+                options[quiz.correct].classList.add('correct');
+                showFeedback(false, quiz.hint);
+            }
+
+            document.getElementById('nextBtn').disabled = false;
+            updateProgress();
+        }
+
+        // 显示反馈
+        function showFeedback(isCorrect, message) {
+            const feedback = document.getElementById('feedback');
+            feedback.textContent = message;
+            feedback.className = 'feedback ' + (isCorrect ? 'success' : 'fail');
+            feedback.style.display = 'block';
+        }
+
+        // 下一题
+        function nextQuestion() {
+            const quizList = quizType === 'kana' ? quizzes : wordQuizzes;
+            currentQuiz++;
+            if (currentQuiz >= quizList.length) {
+                showComplete();
+            } else {
+                loadQuestion();
+            }
+        }
+
+        // 更新分数
+        function updateScore() {
+            const quizList = quizType === 'kana' ? quizzes : wordQuizzes;
+            document.getElementById('score').textContent = score;
+            document.getElementById('total').textContent = quizList.length;
+        }
+
+        // 更新进度条
+        function updateProgress() {
+            const quizList = quizType === 'kana' ? quizzes : wordQuizzes;
+            const total = quizType === 'kana' ? quizzes.length : wordQuizzes.length;
+            const progress = Math.round((currentQuiz / total) * 100);
+            const bar = document.getElementById('progressBar');
+            bar.style.width = progress + '%';
+            bar.textContent = progress + '%';
+        }
+
+        // 显示完成
+        function showComplete() {
+            document.getElementById('quizSection').classList.add('hidden');
+            document.getElementById('completeSection').classList.remove('hidden');
+            document.getElementById('finalScore').textContent = score;
+            
+            const encouragements = [
+                "🌟 继续保持，你是最棒的！",
+                "🎊 太厉害了，下次一定能全对！",
+                "💯 太棒了！继续加油！"
+            ];
+            
+            let idx = 0;
+            if (score === 3) idx = 2;
+            else if (score === 2) idx = 1;
+            
+            document.getElementById('encouragement').textContent = encouragements[idx];
+            document.getElementById('progressBar').style.width = '100%';
+            document.getElementById('progressBar').textContent = '100%';
+        }
+
+        // 重新开始
+        function restart() {
+            document.getElementById('completeSection').classList.add('hidden');
+            document.getElementById('learnSection').classList.remove('hidden');
+            document.getElementById('progressBar').style.width = '0%';
+            document.getElementById('progressBar').textContent = '0%';
+            currentQuiz = 0;
+            score = 0;
+            updateScore();
+            document.querySelectorAll('.vowel-card').forEach(c => c.classList.remove('active'));
+            document.getElementById('startQuizBtn').disabled = true;
+        }
+
+        // 导航到其他课程
+        function goToLesson1() {
+            window.open('index.html', '_blank');
+        }
+
+        function goToLesson3() {
+            window.open('lesson3.html', '_blank');
+        }
+    </script>
+</body>
+</html>
